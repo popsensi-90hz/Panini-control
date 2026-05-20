@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Álbum de Figurinhas - Copa Colorido</title>
+    <style>
+        :root {
+            --primary-bg: #0d47a1; /* Azul vivo clássico de álbum */
+            --accent-yellow: #ffeb3b; /* Amarelo vibrante */
+            --accent-green: #4caf50; /* Verde gramado */
+            --gold: #ffc107; /* Dourado para detalhes */
+            --card-bg: #ffffff;
+            --text-color: #1a252f; /* Letra padrão escura e igual para legibilidade */
+            --font-family: 'Montserrat', 'Segoe UI', Tahoma, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: var(--font-family);
+            color: var(--text-color);
+        }
+
+        body {
+            background-color: #f0f4f8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- TOPO DO SITE --- */
+        header {
+            background: linear-gradient(135deg, #0d47a1 0%, #1976d2 100%);
+            padding: 25px 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            border-bottom: 6px solid var(--accent-yellow);
+        }
+
+        header h1 {
+            color: var(--accent-yellow);
+            font-size: 28px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+        }
+
+        header p {
+            color: #ffffff;
+            font-size: 14px;
+            margin-top: 5px;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        /* --- CORPO PRINCIPAL --- */
+        .container {
+            display: flex;
+            flex: 1;
+            max-width: 1500px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* --- MENU LATERAL COLORIDO --- */
+        .sidebar {
+            width: 300px;
+            background-color: #ffffff;
+            border-right: 3px solid var(--accent-yellow);
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 105px);
+        }
+
+        .sidebar h3 {
+            color: #0d47a1;
+            margin-bottom: 15px;
+            font-size: 18px;
+            text-transform: uppercase;
+            border-bottom: 3px solid var(--accent-green);
+            padding-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .team-list {
+            list-style: none;
+        }
+
+        .team-item {
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background-color: #f8f9fa;
+            border-left: 5px solid #1976d2;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .team-item:hover {
+            background-color: #e3f2fd;
+            transform: translateX(5px);
+        }
+
+        /* Seleção Ativa */
+        .team-item.active {
+            background-color: var(--accent-green);
+            border-left: 5px solid var(--accent-yellow);
+        }
+        
+        .team-item.active, .team-item.active * {
+            color: white !important;
+        }
+
+        /* --- ÁREA DAS FIGURINHAS --- */
+        .main-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            max-height: calc(100vh - 105px);
+        }
+
+        .team-title {
+            font-size: 32px;
+            color: #0d47a1;
+            margin-bottom: 25px;
+            border-bottom: 4px solid var(--accent-yellow);
+            padding-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stickers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 20px;
+        }
+
+        /* --- CARD DE FIGURINHA --- */
+        .sticker-card {
+            background: var(--card-bg);
+            border: 3px solid #dcdde1;
+            border-radius: 14px;
+            padding: 20px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+            user-select: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .sticker-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            border-color: #1976d2;
+        }
+
+        .sticker-number {
+            font-size: 26px;
+            font-weight: 800;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+        }
+
+        .sticker-player {
+            font-size: 13px;
+            color: #57606f;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* --- FIGURINHA MARCADA (COLADA) --- */
+        .sticker-card.owned {
+            background: linear-gradient(135deg, #ffeb3b 0%, #ffc107 100%);
+            border-color: #e6b800;
+        }
+
+        .sticker-card.owned .sticker-number {
+            color: #0d47a1;
+        }
+
+        .sticker-card.owned .sticker-player {
+            color: #0d47a1;
+        }
+
+        .sticker-card.owned::after {
+            content: "★";
+            position: absolute;
+            top: 5px;
+            right: 8px;
+            font-weight: bold;
+            color: #0d47a1;
+            font-size: 18px;
+        }
+
+        /* --- RESPONSIVIDADE --- */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                max-height: 220px;
+                border-right: none;
+                border-bottom: 3px solid var(--accent-yellow);
+            }
+            .main-content {
+                padding: 20px 15px;
+                max-height: none;
+            }
+            .team-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Painel de Figurinhas da Copa</h1>
+        <p>Clique nas figurinhas para marcar as que você já tem!</p>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <h3>Seleções</h3>
+            <ul class="team-list" id="teamList"></ul>
+        </aside>
+
+        <main class="main-content">
+            <h2 class="team-title" id="currentTeamTitle">Selecione um país</h2>
+            <div class="stickers-grid" id="stickersGrid"></div>
+        </main>
+    </div>
+
+    <script>
+        // Lista das 48 seleções fornecidas
+        const teams = [
+            "Argentina", "Brasil", "Colômbia", "Equador", "Paraguai", "Uruguai", 
+            "Canadá", "Estados Unidos", "México", "Curaçau", "Haiti", "Panamá", 
+            "Alemanha", "Áustria", "Bélgica", "Bósnia e Herzegovina", "Croácia", "Escócia", 
+            "Espanha", "França", "Holanda", "Inglaterra", "Noruega", "Portugal", 
+            "República Tcheca", "Suécia", "Suíça", "Turquia", "África do Sul", "Argélia", 
+            "Cabo Verde", "Costa do Marfim", "Egito", "Gana", "Marrocos", 
+            "República Democrática do Congo", "Senegal", "Tunísia", "Arábia Saudita", "Austrália", 
+            "Catar", "Coreia do Sul", "Irã", "Iraque", "Japão", "Jordânia", "Uzbequistão", "Nova Zelândia"
+        ];
+
+        let currentTeam = teams[0];
+        // Mantém os dados salvos localmente no computador do usuário
+        let albumData = JSON.parse(localStorage.getItem('albumCopaDataColorido')) || {};
+
+        const teamListEl = document.getElementById('teamList');
+        const stickersGridEl = document.getElementById('stickersGrid');
+        const currentTeamTitleEl = document.getElementById('currentTeamTitle');
+
+        // Cria a lista lateral de países
+        function initSidebar() {
+            teamListEl.innerHTML = '';
+            teams.forEach(team => {
+                const li = document.createElement('li');
+                li.className = `team-item ${team === currentTeam ? 'active' : ''}`;
+                li.textContent = team;
+                li.onclick = () => selectTeam(team);
+                teamListEl.appendChild(li);
+            });
+        }
+
+        // Alterna entre os países
+        function selectTeam(teamName) {
+            currentTeam = teamName;
+            initSidebar();
+            renderStickers();
+        }
+
+        // Gera as 20 figurinhas da seleção clicada
+        function renderStickers() {
+            currentTeamTitleEl.textContent = currentTeam;
+            stickersGridEl.innerHTML = '';
+
+            if (!albumData[currentTeam]) {
+                albumData[currentTeam] = {};
+            }
+
+            for (let i = 1; i <= 20; i++) {
+                const isOwned = albumData[currentTeam][i] || false;
+                const card = document.createElement('div');
+                card.className = `sticker-card ${isOwned ? 'owned' : ''}`;
+                
+                card.innerHTML = `
+                    <div class="sticker-number">#${i}</div>
+                    <div class="sticker-player">Jogador ${i}</div>
+                `;
+
+                card.onclick = () => toggleSticker(i, card);
+                stickersGridEl.appendChild(card);
+            }
+        }
+
+        // Adiciona ou remove a figurinha da coleção ao clicar
+        function toggleSticker(number, element) {
+            const isOwned = !albumData[currentTeam][number];
+            albumData[currentTeam][number] = isOwned;
+            
+            if (isOwned) {
+                element.classList.add('owned');
+            } else {
+                element.classList.remove('owned');
+            }
+
+            localStorage.setItem('albumCopaDataColorido', JSON.stringify(albumData));
+        }
+
+        // Executa ao carregar o site
+        initSidebar();
+        renderStickers();
+    </script>
+</body>
+</html>

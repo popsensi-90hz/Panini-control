@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Álbum da Copa</title>
+
+<style>
+:root{
+    --blue:#0d47a1;
+    --yellow:#ffeb3b;
+    --green:#4caf50;
+    --white:#ffffff;
+    --gray:#f1f1f1;
+    --dark:#1a252f;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial, Helvetica, sans-serif;
+    background:#eef2f7;
+    color:var(--dark);
+    min-height:100vh;
+}
+
+/* HEADER */
+header{
+    background:linear-gradient(135deg,#0d47a1,#1976d2);
+    padding:25px;
+    text-align:center;
+    border-bottom:5px solid var(--yellow);
+}
+
+header h1{
+    color:var(--yellow);
+    font-size:30px;
+    margin-bottom:8px;
+}
+
+header p{
+    color:white;
+}
+
+/* LAYOUT */
+.container{
+    display:flex;
+    min-height:calc(100vh - 110px);
+}
+
+/* SIDEBAR */
+.sidebar{
+    width:280px;
+    background:white;
+    border-right:3px solid var(--yellow);
+    overflow-y:auto;
+    padding:20px;
+}
+
+.sidebar h2{
+    color:var(--blue);
+    margin-bottom:15px;
+}
+
+.team-list{
+    list-style:none;
+}
+
+.team-item{
+    background:#f5f5f5;
+    padding:12px;
+    margin-bottom:8px;
+    border-left:5px solid #1976d2;
+    border-radius:5px;
+    cursor:pointer;
+    transition:0.2s;
+    font-weight:bold;
+}
+
+.team-item:hover{
+    transform:translateX(5px);
+    background:#e3f2fd;
+}
+
+.team-item.active{
+    background:var(--green);
+    color:white;
+    border-left:5px solid var(--yellow);
+}
+
+/* MAIN */
+.main{
+    flex:1;
+    padding:25px;
+}
+
+.team-title{
+    color:var(--blue);
+    font-size:32px;
+    margin-bottom:25px;
+    border-bottom:4px solid var(--yellow);
+    padding-bottom:10px;
+}
+
+/* GRID */
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+    gap:20px;
+}
+
+/* CARD */
+.card{
+    background:white;
+    border:3px solid #ddd;
+    border-radius:15px;
+    padding:20px 10px;
+    text-align:center;
+    cursor:pointer;
+    transition:0.2s;
+    position:relative;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+.card-number{
+    font-size:28px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+.card-player{
+    font-size:13px;
+    text-transform:uppercase;
+    font-weight:bold;
+}
+
+/* OWNED */
+.card.owned{
+    background:linear-gradient(135deg,#ffeb3b,#ffc107);
+    border-color:#e6b800;
+}
+
+.card.owned::after{
+    content:"★";
+    position:absolute;
+    top:5px;
+    right:8px;
+    font-size:18px;
+    color:var(--blue);
+    font-weight:bold;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+
+    .container{
+        flex-direction:column;
+    }
+
+    .sidebar{
+        width:100%;
+        border-right:none;
+        border-bottom:3px solid var(--yellow);
+        max-height:250px;
+    }
+
+    .team-title{
+        font-size:24px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Álbum da Copa 2026</h1>
+    <p>Clique nas figurinhas para marcar as que você já possui</p>
+</header>
+
+<div class="container">
+
+    <aside class="sidebar">
+        <h2>Seleções</h2>
+        <ul class="team-list" id="teamList"></ul>
+    </aside>
+
+    <main class="main">
+        <h2 class="team-title" id="teamTitle"></h2>
+        <div class="grid" id="grid"></div>
+    </main>
+
+</div>
+
+<script>
+
+const teams = [
+"Argentina","Brasil","Colômbia","Equador","Paraguai","Uruguai",
+"Canadá","Estados Unidos","México","Curaçau","Haiti","Panamá",
+"Alemanha","Áustria","Bélgica","Bósnia e Herzegovina","Croácia","Escócia",
+"Espanha","França","Holanda","Inglaterra","Noruega","Portugal",
+"República Tcheca","Suécia","Suíça","Turquia","África do Sul","Argélia",
+"Cabo Verde","Costa do Marfim","Egito","Gana","Marrocos",
+"República Democrática do Congo","Senegal","Tunísia","Arábia Saudita",
+"Austrália","Catar","Coreia do Sul","Irã","Iraque","Japão",
+"Jordânia","Uzbequistão","Nova Zelândia"
+];
+
+let currentTeam = teams[0];
+
+let albumData = JSON.parse(
+    localStorage.getItem("albumData")
+) || {};
+
+const teamList = document.getElementById("teamList");
+const grid = document.getElementById("grid");
+const title = document.getElementById("teamTitle");
+
+/* Sidebar */
+function renderTeams(){
+
+    teamList.innerHTML = "";
+
+    teams.forEach(team => {
+
+        const li = document.createElement("li");
+
+        li.className = "team-item";
+
+        if(team === currentTeam){
+            li.classList.add("active");
+        }
+
+        li.textContent = team;
+
+        li.addEventListener("click", () => {
+            currentTeam = team;
+            renderTeams();
+            renderStickers();
+        });
+
+        teamList.appendChild(li);
+
+    });
+}
+
+/* Stickers */
+function renderStickers(){
+
+    title.textContent = currentTeam;
+
+    grid.innerHTML = "";
+
+    if(!albumData[currentTeam]){
+        albumData[currentTeam] = {};
+    }
+
+    for(let i = 1; i <= 20; i++){
+
+        const owned = albumData[currentTeam][i];
+
+        const card = document.createElement("div");
+
+        card.className = "card";
+
+        if(owned){
+            card.classList.add("owned");
+        }
+
+        card.innerHTML = `
+            <div class="card-number">#${i}</div>
+            <div class="card-player">Jogador ${i}</div>
+        `;
+
+        card.addEventListener("click", () => {
+
+            albumData[currentTeam][i] = !albumData[currentTeam][i];
+
+            localStorage.setItem(
+                "albumData",
+                JSON.stringify(albumData)
+            );
+
+            renderStickers();
+        });
+
+        grid.appendChild(card);
+    }
+}
+
+renderTeams();
+renderStickers();
+
+</script>
+
+</body>
+</html>
